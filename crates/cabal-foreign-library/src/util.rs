@@ -20,9 +20,9 @@ pub static OUT_DIR_PATH: PathBuf = PathBuf::from_str(&OUT_DIR).unwrap();
 #[cfg(not(any(target_os = "macos", target_os = "windows")))]
 pub const DYLIB_EXT: &str = "so";
 #[cfg(target_os = "macos")]
-pub const DYLIB_EXTENSION: &str = "dylib";
+pub const DYLIB_EXT: &str = "dylib";
 #[cfg(target_os = "windows")]
-pub const DYLIB_EXTENSION: &str = "dll";
+pub const DYLIB_EXT: &str = "dll";
 
 pub trait CommandStdoutExt {
     fn stdout(&mut self) -> Result<String, io::Error>;
