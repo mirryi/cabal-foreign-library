@@ -210,18 +210,15 @@ impl<'b> Lib<'b> {
         for entry in fs::read_dir(&ghc_lib_dir).unwrap() {
             let entry = entry.unwrap();
 
-            match entry.file_name().to_str() {
-                Some(i) => {
-                    if non_rts_regex.is_match(i) || rts_regex.is_match(i) {
-                        // get rid of lib from the file name
-                        let temp = i.split_at(3).1;
-                        // get rid of the .so from the file name
-                        let trimmed = temp.split_at(temp.len() - DYLIB_EXT.len() - 1).0;
+            if let Some(i) = entry.file_name().to_str() {
+                if non_rts_regex.is_match(i) || rts_regex.is_match(i) {
+                    // get rid of lib from the file name
+                    let temp = i.split_at(3).1;
+                    // get rid of the .so from the file name
+                    let trimmed = temp.split_at(temp.len() - DYLIB_EXT.len() - 1).0;
 
-                        println!("cargo:rustc-link-lib=dylib={}", trimmed);
-                    }
+                    println!("cargo:rustc-link-lib=dylib={}", trimmed);
                 }
-                _ => panic!("Unable to link ghc libs"),
             }
         }
 
@@ -229,6 +226,7 @@ impl<'b> Lib<'b> {
             println!("cargo::rustc-link-arg=-Wl,-rpath,{}", ghc_lib_dir.display());
         }
 
+        // TODO error if failed to find some libraries
         Ok(())
     }
 }
