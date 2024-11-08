@@ -183,10 +183,17 @@ impl<'b> Lib<'b> {
             .join(format!("{}-tmp", package()))
             .join("Lib_stub.h");
 
-        // invoke bindgen
-        let bindings = bindgen::Builder::default()
-            .clang_args(["-isystem", rts_headers.as_str()])
-            .header(stub)
+        let builder = if stub.try_exists().map_err(BindingsError::IoError)? {
+            // invoke bindgen
+            bindgen::Builder::default()
+                .clang_args(["-isystem", rts_headers.as_str()])
+                .header(stub)
+        } else {
+            let rts_header = rts_headers.join("HsFFI.h");
+            bindgen::Builder::default().header(rts_header)
+        };
+
+        let bindings = builder
             .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
             .generate()
             .map_err(BindingsError::BindgenError)?;

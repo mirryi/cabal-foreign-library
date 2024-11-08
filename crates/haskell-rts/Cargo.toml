@@ -1,0 +1,11 @@
+[package]
+name = "haskell-rts"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "haskell_rts"
+path = "src/lib.rs"
+
+[build-dependencies]
+cabal-foreign-library = { path = "../cabal-foreign-library" }
