@@ -1,3 +1,14 @@
+//! A library for Cargo [build scripts](https://doc.rust-lang.org/cargo/reference/build-scripts.html)
+//! to build and link a Cabal [foreign library](https://cabal.readthedocs.io/en/3.4/cabal-package.html#foreign-libraries)
+//! to Rust crates. The crate calls out to Cabal and GHC; all necesssary Haskell dependencies must
+//! be installed and managed separately.
+//!
+//! Everything is a work-in-progress!
+//!
+//! # Example
+//!
+//! For a basic usage example, see [`example-foo`](https://github.com/mirryi/cabal-foreign-library/tree/master/crates/example-foo).
+
 mod error;
 mod util;
 
@@ -6,10 +17,12 @@ use std::{fs, str};
 
 use camino::{Utf8Path, Utf8PathBuf};
 use regex::Regex;
+
 use util::{out_dir, package, CommandStdoutExt, DYLIB_EXT};
 
 pub use error::*;
 
+/// A builder for a Cabal library.
 #[derive(Debug)]
 pub struct Build {
     cabal: Utf8PathBuf,
@@ -17,6 +30,7 @@ pub struct Build {
     rts_version: RTSVersion,
 }
 
+/// A handler for a library built by Cabal.
 #[derive(Debug)]
 pub struct Lib<'b> {
     build: &'b Build,
@@ -30,10 +44,13 @@ enum HSDep {
     Base,
 }
 
+/// Generated Rust bindings for the Haskell library.
 pub type Bindings = bindgen::Bindings;
 
+/// Alias for Result.
 pub type Result<T> = std::result::Result<T, Error>;
 
+/// The version of the Haskell runtime library.
 #[derive(Debug, Clone, Copy)]
 pub enum RTSVersion {
     NonThreaded,
@@ -63,12 +80,16 @@ impl Build {
     }
 
     /// Set the `cabal` binary.
+    ///
+    /// By default, `PATH` is searched for the `cabal` binary.
     pub fn use_cabal(&mut self, path: impl AsRef<Utf8Path>) -> &mut Self {
         self.cabal = path.as_ref().to_path_buf();
         self
     }
 
     /// Set the `ghc-pkg` binary.
+    ///
+    /// By default, `PATH` is searched for the `ghc-pkg` binary.
     pub fn use_ghc_pkg(&mut self, path: impl AsRef<Utf8Path>) -> &mut Self {
         self.ghc_pkg = path.as_ref().to_path_buf();
         self
@@ -82,7 +103,8 @@ impl Build {
         self
     }
 
-    /// Build the foreign library with cabal.
+    /// Build the foreign library with cabal. The resulting [`Lib`] handler can be used to link and
+    /// generate bindings.
     pub fn build(&mut self) -> Result<Lib> {
         // build
         let status = self
@@ -125,6 +147,9 @@ impl Build {
 
 impl<'b> Lib<'b> {
     /// Link the crate to the dynamic library.
+    ///
+    /// If `rpath` is true, the runpath of the resulting executable is modified to include the
+    /// directory of the compiled foreign library.
     pub fn link(&self, rpath: bool) -> Result<()> {
         let dir = self.path.parent().unwrap();
         println!("cargo::rustc-link-search=native={}", dir);
@@ -138,6 +163,8 @@ impl<'b> Lib<'b> {
     }
 
     /// Generate Rust bindings for the dynamic library.
+    ///
+    /// See [`bindgen::Bindings`].
     pub fn bindings(&self) -> Result<Bindings> {
         // find GHC RTS headers to be included
         let rts_headers = self
@@ -167,7 +194,10 @@ impl<'b> Lib<'b> {
         Ok(bindings)
     }
 
-    /// Link the crate to the Haskell system libraries.
+    /// Link the crate to the Haskell system libraries, which are discovered via `ghc-pkg`.
+    ///
+    /// If `rpath` is true, the runpath of the resulting executable is modified to include the
+    /// directory of the system libraries.
     pub fn link_system(&self, rpath: bool) -> Result<()> {
         // retrieve dynamic libraries directory.
         let ghc_lib_dir = self
@@ -232,7 +262,7 @@ impl<'b> Lib<'b> {
 }
 
 impl RTSVersion {
-    pub fn suffix(&self) -> &str {
+    fn suffix(&self) -> &str {
         match self {
             RTSVersion::NonThreaded => "",
             RTSVersion::NonThreadedL => "_l",
@@ -245,7 +275,7 @@ impl RTSVersion {
 }
 
 impl HSDep {
-    pub fn prefix(&self) -> &str {
+    fn prefix(&self) -> &str {
         match self {
             HSDep::Ghc => "HSghc",
             HSDep::Base => "HSbase",

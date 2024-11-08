@@ -1,5 +1,6 @@
 use std::io;
 
+/// Type for errors that may occur.
 #[derive(Debug, thiserror::Error)]
 pub enum Error {
     #[error("cabal invocation error")]
@@ -13,6 +14,7 @@ pub enum Error {
     BindingsError(#[from] BindingsError),
 }
 
+/// An error that occurs when invoking `cabal` or `ghc-pkg`.
 #[derive(Debug, thiserror::Error)]
 pub enum InvocationError {
     #[error("resolution error")]
@@ -21,6 +23,7 @@ pub enum InvocationError {
     IoError(#[from] io::Error),
 }
 
+/// An error that occurs when generating bindings.
 #[derive(Debug, thiserror::Error)]
 pub enum BindingsError {
     #[error("i/o error")]
