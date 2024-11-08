@@ -1,0 +1,11 @@
+[package]
+name = "example-foo"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "example_foo"
+path = "rust/lib.rs"
+
+[build-dependencies]
+cabal-foreign-library = { path = "../cabal-foreign-library" }

@@ -1,0 +1,20 @@
+cabal-version:      3.0
+name:               example-foo
+version:            0.1.0.0
+license:            MIT
+license-file:       LICENSE
+author:             Eric Zhao
+maintainer:         21zhaoe@protonmail.com
+build-type:         Simple
+
+common warnings
+    ghc-options: -Wall
+
+foreign-library example-foo
+    type:             native-shared
+    other-modules:    Lib
+    build-depends:
+        base ^>=4.17.2.1
+        , borsh >=0.3.0
+    hs-source-dirs:   src
+    default-language: Haskell2010
