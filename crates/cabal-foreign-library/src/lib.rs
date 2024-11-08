@@ -6,7 +6,7 @@ use std::{fs, str};
 
 use camino::{Utf8Path, Utf8PathBuf};
 use regex::Regex;
-use util::{CommandStdoutExt, CARGO_PKG_NAME, DYLIB_EXT, OUT_DIR};
+use util::{out_dir, package, CommandStdoutExt, DYLIB_EXT};
 
 pub use error::*;
 
@@ -96,7 +96,7 @@ impl Build {
         // find the dylib file
         let path = self
             .cabal_cmd("list-bin")
-            .arg(&*CARGO_PKG_NAME)
+            .arg(util::package())
             .stdout_trim()
             .map(Utf8PathBuf::from)
             .map_err(|err| Error::BuildError(Some(err)))?;
@@ -112,7 +112,7 @@ impl Build {
 
     fn cabal_cmd(&self, cmd: &str) -> Command {
         let mut cabal = Command::new(&self.cabal);
-        cabal.args([cmd, "--builddir", &OUT_DIR]);
+        cabal.args([cmd, "--builddir", &out_dir()]);
         cabal
     }
 
@@ -128,7 +128,7 @@ impl<'b> Lib<'b> {
     pub fn link(&self) -> Result<()> {
         let dir = self.path.parent().unwrap();
         println!("cargo::rustc-link-search=native={}", dir);
-        println!("cargo::rustc-link-lib=dylib={}", *CARGO_PKG_NAME);
+        println!("cargo::rustc-link-lib=dylib={}", &package());
 
         Ok(())
     }
@@ -149,7 +149,7 @@ impl<'b> Lib<'b> {
             .path
             .parent()
             .unwrap()
-            .join(format!("{}-tmp", *CARGO_PKG_NAME))
+            .join(format!("{}-tmp", package()))
             .join("Lib_stub.h");
 
         // invoke bindgen

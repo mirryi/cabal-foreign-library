@@ -1,21 +1,18 @@
 use std::ffi::OsStr;
-use std::path::PathBuf;
 use std::process::Command;
-use std::str::FromStr;
 use std::{env, io};
 
 use camino::Utf8PathBuf;
-use static_init::dynamic;
 
 use crate::InvocationError;
 
-#[dynamic]
-pub static CARGO_PKG_NAME: String = env::var("CARGO_PKG_NAME").unwrap();
+pub fn package() -> String {
+    env::var("CARGO_PKG_NAME").unwrap()
+}
 
-#[dynamic]
-pub static OUT_DIR: String = env::var("OUT_DIR").unwrap();
-#[dynamic]
-pub static OUT_DIR_PATH: PathBuf = PathBuf::from_str(&OUT_DIR).unwrap();
+pub fn out_dir() -> String {
+    env::var("OUT_DIR").unwrap()
+}
 
 #[cfg(not(any(target_os = "macos", target_os = "windows")))]
 pub const DYLIB_EXT: &str = "so";
