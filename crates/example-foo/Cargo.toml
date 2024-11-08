@@ -7,5 +7,9 @@ edition = "2021"
 name = "example_foo"
 path = "rust/lib.rs"
 
+[[bin]]
+name = "example-foo"
+path = "rust/main.rs"
+
 [build-dependencies]
 cabal-foreign-library = { path = "../cabal-foreign-library" }
