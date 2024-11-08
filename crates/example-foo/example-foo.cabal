@@ -1,8 +1,7 @@
 cabal-version:      3.0
 name:               example-foo
 version:            0.1.0.0
-license:            MIT
-license-file:       LICENSE
+license:            MIT OR Apache-2.0
 author:             Eric Zhao
 maintainer:         21zhaoe@protonmail.com
 build-type:         Simple

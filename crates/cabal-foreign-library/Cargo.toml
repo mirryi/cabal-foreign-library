@@ -1,10 +1,16 @@
 [package]
 name = "cabal-foreign-library"
 version = "0.1.0"
+authors = ["Eric Zhao <21zhaoe@protonmail.com>"]
+license = "MIT OR Apache-2.0"
+homepage = "https://github.com/mirryi/cabal-foreign-library"
+repository = "https://github.com/mirryi/cabal-foreign-library"
+documentation = "https://docs.rs/cabal-foreign-library"
+description = """
+A library for Cargo build scripts to build and link a Cabal foreign-library as a Rust crate.
+"""
 edition = "2021"
-
-[package.metadata]
-msrv = "1.77.2"
+rust-version = "1.77.2"
 
 [dependencies]
 bindgen = "0.70"
