@@ -125,10 +125,14 @@ impl Build {
 
 impl<'b> Lib<'b> {
     /// Link the crate to the dynamic library.
-    pub fn link(&self) -> Result<()> {
+    pub fn link(&self, rpath: bool) -> Result<()> {
         let dir = self.path.parent().unwrap();
         println!("cargo::rustc-link-search=native={}", dir);
         println!("cargo::rustc-link-lib=dylib={}", &package());
+
+        if rpath {
+            println!("cargo::rustc-link-arg=-Wl,-rpath,{}", dir);
+        }
 
         Ok(())
     }
@@ -164,7 +168,7 @@ impl<'b> Lib<'b> {
     }
 
     /// Link the crate to the Haskell system libraries.
-    pub fn link_system(&self) -> Result<()> {
+    pub fn link_system(&self, rpath: bool) -> Result<()> {
         // retrieve dynamic libraries directory.
         let ghc_lib_dir = self
             .build
@@ -201,12 +205,9 @@ impl<'b> Lib<'b> {
         ))
         .unwrap();
 
-        println!("{}", non_rts_regex);
-        println!("{}", rts_regex);
-
         // link matching library files
         println!("cargo:rustc-link-search=native={}", ghc_lib_dir.display());
-        for entry in fs::read_dir(ghc_lib_dir).unwrap() {
+        for entry in fs::read_dir(&ghc_lib_dir).unwrap() {
             let entry = entry.unwrap();
 
             match entry.file_name().to_str() {
@@ -222,6 +223,10 @@ impl<'b> Lib<'b> {
                 }
                 _ => panic!("Unable to link ghc libs"),
             }
+        }
+
+        if rpath {
+            println!("cargo::rustc-link-arg=-Wl,-rpath,{}", ghc_lib_dir.display());
         }
 
         Ok(())

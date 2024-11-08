@@ -16,10 +16,10 @@ fn main() {
         .write_to_file(bindings_file)
         .expect("failed to write bindings");
 
-    // link the library
-    lib.link().expect("failed to link cabal library");
+    // link the library, modifying rpath
+    lib.link(true).expect("failed to link cabal library");
 
-    // link the system dependencies
-    lib.link_system()
+    // link the system dependencies, modifying rpath
+    lib.link_system(true)
         .expect("failed to link Haskell system libraries");
 }
