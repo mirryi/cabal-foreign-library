@@ -20,6 +20,7 @@ use regex::Regex;
 
 use util::{out_dir, package, CommandStdoutExt, DYLIB_EXT};
 
+pub use bindgen;
 pub use error::*;
 
 /// A builder for a Cabal library.
@@ -44,8 +45,8 @@ enum HSDep {
     Base,
 }
 
-/// Generated Rust bindings for the Haskell library.
-pub type Bindings = bindgen::Bindings;
+/// Builder for the Rust bindings for the Haskell library.
+pub type BindgenBuilder = bindgen::Builder;
 
 /// Alias for Result.
 pub type Result<T> = std::result::Result<T, Error>;
@@ -162,10 +163,12 @@ impl<'b> Lib<'b> {
         Ok(())
     }
 
-    /// Generate Rust bindings for the dynamic library.
+    /// Return a [`bindgen::Builder`] for generating the Rust bindings of the dynamic library. The
+    /// builder is already configued for the correct header and includes files; additional
+    /// configuration may be performed as necessary.
     ///
-    /// See [`bindgen::Bindings`].
-    pub fn bindings(&self) -> Result<Bindings> {
+    /// See documentation for [`bindgen::Builder`].
+    pub fn bindings(&self) -> Result<bindgen::Builder> {
         // find GHC RTS headers to be included
         let rts_headers = self
             .build
@@ -173,7 +176,8 @@ impl<'b> Lib<'b> {
             .args(["rts", "include-dirs", "--simple-output"])
             .stdout_trim()
             .map(Utf8PathBuf::from)
-            .map_err(BindingsError::IoError)?;
+            .map_err(InvocationError::IoError)
+            .map_err(Error::GHCPkgError)?;
 
         // find the stub file
         let stub = self
@@ -184,14 +188,12 @@ impl<'b> Lib<'b> {
             .join("Lib_stub.h");
 
         // invoke bindgen
-        let bindings = bindgen::Builder::default()
+        let builder = bindgen::Builder::default()
             .clang_args(["-isystem", rts_headers.as_str()])
             .header(stub)
-            .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()))
-            .generate()
-            .map_err(BindingsError::BindgenError)?;
+            .parse_callbacks(Box::new(bindgen::CargoCallbacks::new()));
 
-        Ok(bindings)
+        Ok(builder)
     }
 
     /// Link the crate to the Haskell system libraries, which are discovered via `ghc-pkg`.

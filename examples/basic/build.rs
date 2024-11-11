@@ -1,7 +1,7 @@
 use std::env;
 use std::path::PathBuf;
 
-use cabal_foreign_library::Build;
+use cabal_foreign_library::{bindgen, Build};
 
 fn main() {
     let mut cabal = Build::new().unwrap();
@@ -12,6 +12,9 @@ fn main() {
     // generate and write bindings
     let bindings_file = PathBuf::from(env::var("OUT_DIR").unwrap()).join("bindings.rs");
     lib.bindings()
+        .expect("failed to configure bindings")
+        .rust_target(bindgen::RustTarget::Stable_1_68)
+        .generate()
         .expect("failed to generate bindings")
         .write_to_file(bindings_file)
         .expect("failed to write bindings");
