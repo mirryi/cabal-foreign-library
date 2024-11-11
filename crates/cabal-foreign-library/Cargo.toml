@@ -10,7 +10,7 @@ description = """
 A library for Cargo build scripts to build and link a Cabal foreign-library as a Rust crate.
 """
 edition = "2021"
-rust-version = "1.77.2"
+rust-version = "1.70.0"
 
 [dependencies]
 bindgen = "0.70"
