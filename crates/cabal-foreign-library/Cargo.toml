@@ -1,6 +1,6 @@
 [package]
 name = "cabal-foreign-library"
-version = "0.1.2"
+version = "0.2.0"
 authors = ["Eric Zhao <21zhaoe@protonmail.com>"]
 license = "MIT OR Apache-2.0"
 homepage = "https://github.com/mirryi/cabal-foreign-library"
