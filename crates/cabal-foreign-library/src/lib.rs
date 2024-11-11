@@ -7,7 +7,7 @@
 //!
 //! # Example
 //!
-//! For a basic usage example, see [`example-foo`](https://github.com/mirryi/cabal-foreign-library/tree/master/crates/example-foo).
+//! For a basic usage example, see [`examples/basic`](https://github.com/mirryi/cabal-foreign-library/tree/master/examples/basic).
 
 mod error;
 mod util;
