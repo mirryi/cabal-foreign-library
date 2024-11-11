@@ -1,6 +1,6 @@
 use std::ptr::null_mut;
 
-use example_foo::{foo, hs_exit, hs_init};
+use example_basic::{foo, hs_exit, hs_init};
 
 fn main() {
     unsafe {

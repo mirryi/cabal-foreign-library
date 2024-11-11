@@ -1,5 +1,5 @@
 cabal-version:      3.0
-name:               example-foo
+name:               example-basic
 version:            0.1.0.0
 license:            MIT OR Apache-2.0
 author:             Eric Zhao
@@ -9,7 +9,7 @@ build-type:         Simple
 common warnings
     ghc-options: -Wall
 
-foreign-library example-foo
+foreign-library example-basic
     type:             native-shared
     other-modules:    Lib
     build-depends:

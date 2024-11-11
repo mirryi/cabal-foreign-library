@@ -1,0 +1,15 @@
+[package]
+name = "example-basic"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "example_basic"
+path = "rust/lib.rs"
+
+[[bin]]
+name = "example-basic"
+path = "rust/main.rs"
+
+[build-dependencies]
+cabal-foreign-library = { path = "../../crates/cabal-foreign-library" }

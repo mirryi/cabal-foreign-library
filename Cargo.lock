@@ -97,7 +97,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "example-foo"
+name = "example-basic"
 version = "0.1.0"
 dependencies = [
  "cabal-foreign-library",
