@@ -1,5 +1,8 @@
 # cabal-foreign-library
 
+![crates.io](https://img.shields.io/crates/v/cabal-foreign-library)
+![docs.rs](https://img.shields.io/docsrs/cabal-foreign-library)
+
 > [!WARNING]
 > The current state of this is very bare-bones and very much a work-in-progress.
 
