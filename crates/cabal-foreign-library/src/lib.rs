@@ -152,11 +152,11 @@ impl<'b> Lib<'b> {
     /// directory of the compiled foreign library.
     pub fn link(&self, rpath: bool) -> Result<()> {
         let dir = self.path.parent().unwrap();
-        println!("cargo::rustc-link-search=native={}", dir);
-        println!("cargo::rustc-link-lib=dylib={}", &package());
+        println!("cargo:rustc-link-search=native={}", dir);
+        println!("cargo:rustc-link-lib=dylib={}", &package());
 
         if rpath {
-            println!("cargo::rustc-link-arg=-Wl,-rpath,{}", dir);
+            println!("cargo:rustc-link-arg=-Wl,-rpath,{}", dir);
         }
 
         Ok(())
@@ -253,7 +253,7 @@ impl<'b> Lib<'b> {
         }
 
         if rpath {
-            println!("cargo::rustc-link-arg=-Wl,-rpath,{}", ghc_lib_dir.display());
+            println!("cargo:rustc-link-arg=-Wl,-rpath,{}", ghc_lib_dir.display());
         }
 
         // TODO error if failed to find some libraries
